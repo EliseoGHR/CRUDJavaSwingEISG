@@ -1,4 +1,4 @@
-/*
+/* 
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
@@ -6,9 +6,14 @@ package com.mycompany.crudjavaswingeisg;
 
 import javax.swing.JOptionPane;
 import utilerias.OpcionesCRUD;
+import accesoadatos.CursoDAL;
+import accesoadatos.InscripcionDAL;
+import entidades.Curso;
+import entidades.Inscripcion;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.DefaultComboBoxModel;
+
 
 /**
  *
@@ -17,13 +22,18 @@ import javax.swing.DefaultComboBoxModel;
 public class FrmInscripcionesEsc extends javax.swing.JFrame {
 
     private OpcionesCRUD opcionCRUD;
-
+   private HashMap<Integer, Curso> mapCursos = new HashMap<Integer,Curso>();
+   private Inscripcion productActual = new Inscripcion();
     /**
      * Creates new form FrmInscripcionesEsc
      */
     public FrmInscripcionesEsc(OpcionesCRUD opcion) {
         this.opcionCRUD = opcion;
         initComponents();
+        ArrayList<Curso> cursos = CursoDAL.obtenerTodos();
+         DefaultComboBoxModel<String> modelCombox = new DefaultComboBoxModel(cursos.toArray());
+         jComboCursos.setModel(modelCombox);
+        
     }
 
     /**
@@ -59,6 +69,11 @@ public class FrmInscripcionesEsc extends javax.swing.JFrame {
         jComboCursos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jBtnGuardar.setText("Guardar");
+        jBtnGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBtnGuardarActionPerformed(evt);
+            }
+        });
 
         jBtnCancelar.setText("Cancelar");
         jBtnCancelar.addActionListener(new java.awt.event.ActionListener() {
@@ -124,6 +139,30 @@ public class FrmInscripcionesEsc extends javax.swing.JFrame {
         // TODO add your handling code here:
         this.setVisible(false);
     }//GEN-LAST:event_jBtnCancelarActionPerformed
+
+    private void jBtnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnGuardarActionPerformed
+        // TODO add your handling code here:
+         if (null != opcionCRUD) // TODO add your handling code here:
+            switch (opcionCRUD) {
+                case CREAR:
+                    JOptionPane.showMessageDialog(this,"Guardar resgistros","Crear",
+                    JOptionPane.INFORMATION_MESSAGE);
+                    this.setVisible(false);
+                    break;
+                case MODIFICAR:
+                    JOptionPane.showMessageDialog(this,"Modificar resgistros","Modificar",
+                    JOptionPane.INFORMATION_MESSAGE);
+                    this.setVisible(false);
+                    break;
+                case ELIMINAR:
+                    JOptionPane.showMessageDialog(this,"Eliminar resgistros","Eliminar",
+                    JOptionPane.INFORMATION_MESSAGE);
+                    this.setVisible(false);
+                    break;
+                default:
+                    break;
+            }
+    }//GEN-LAST:event_jBtnGuardarActionPerformed
 
     /**
      * @param args the command line arguments
