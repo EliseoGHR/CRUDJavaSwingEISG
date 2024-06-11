@@ -10,10 +10,14 @@ import accesoadatos.CursoDAL;
 import accesoadatos.InscripcionDAL;
 import entidades.Curso;
 import entidades.Inscripcion;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.DefaultComboBoxModel;
-
 
 /**
  *
@@ -22,8 +26,9 @@ import javax.swing.DefaultComboBoxModel;
 public class FrmInscripcionesEsc extends javax.swing.JFrame {
 
     private OpcionesCRUD opcionCRUD;
-   private HashMap<Integer, Curso> mapCursos = new HashMap<Integer,Curso>();
-   private Inscripcion productActual = new Inscripcion();
+    private HashMap<Integer, Curso> mapCursos = new HashMap<Integer, Curso>();
+    private Inscripcion productActual = new Inscripcion();
+
     /**
      * Creates new form FrmInscripcionesEsc
      */
@@ -31,9 +36,9 @@ public class FrmInscripcionesEsc extends javax.swing.JFrame {
         this.opcionCRUD = opcion;
         initComponents();
         ArrayList<Curso> cursos = CursoDAL.obtenerTodos();
-         DefaultComboBoxModel<String> modelCombox = new DefaultComboBoxModel(cursos.toArray());
-         jComboCursos.setModel(modelCombox);
-        
+        DefaultComboBoxModel<Curso> modelCombox = new DefaultComboBoxModel(cursos.toArray());
+        jComboCursos.setModel(modelCombox);
+
     }
 
     /**
@@ -65,8 +70,6 @@ public class FrmInscripcionesEsc extends javax.swing.JFrame {
         jLabel3.setText("Nombre del estudiante:");
 
         jLabel4.setText("Correo del estudiante:");
-
-        jComboCursos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jBtnGuardar.setText("Guardar");
         jBtnGuardar.addActionListener(new java.awt.event.ActionListener() {
@@ -140,39 +143,142 @@ public class FrmInscripcionesEsc extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_jBtnCancelarActionPerformed
 
+    private boolean validarCorreo(String correo) {
+        String regex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(correo);
+        return matcher.matches();
+    }
+
+    private Inscripcion obtenerDatos() {
+        Inscripcion inscripcion = new Inscripcion();
+        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
+        String fechaTexto = jTxtFechaIns.getText();
+        Date fechaInscripcion;
+        try {
+            fechaInscripcion = formatoFecha.parse(fechaTexto);
+        } catch (ParseException e) {
+
+            JOptionPane.showMessageDialog(null, "El formato de fecha ingresado es incorrecto. Debe ser dd/mm/aaaa.", "Error de formato", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+        inscripcion.setFechaInscripcion(fechaInscripcion);
+        Curso curso = (Curso) jComboCursos.getSelectedItem();
+        inscripcion.setCursoID(curso.getCursoID());
+        inscripcion.setEstudianteNombre(jTxtNombreEs.getText());
+        String correoEstudiante = jTxtCorreoEs.getText();
+        if (validarCorreo(correoEstudiante)) {
+            inscripcion.setEstudianteCorreo(correoEstudiante);
+        } else {
+            JOptionPane.showMessageDialog(null, "El correo electrónico ingresado no es válido.", "Error de formato", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        //inscripcion.setInscripcionID(inscripcionActual.getInscripcionID());
+        return inscripcion;
+    }
+
+    private boolean validarDatos() {
+        boolean valid = true;
+
+        // Validar campo de fecha de inscripción
+        if (jTxtFechaIns.getText().isEmpty()) {
+            valid = false;
+            JOptionPane.showMessageDialog(this, "La fecha de inscripción es obligatoria", "Validar campo", JOptionPane.WARNING_MESSAGE);
+        }
+
+        // Validar campo de curso
+        if (jComboCursos.getSelectedItem() == null) {
+            valid = false;
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un curso", "Validar campo", JOptionPane.WARNING_MESSAGE);
+        }
+
+        // Validar campo de nombre del estudiante
+        if (jTxtNombreEs.getText().isEmpty()) {
+            valid = false;
+            JOptionPane.showMessageDialog(this, "El nombre del estudiante es obligatorio", "Validar campo", JOptionPane.WARNING_MESSAGE);
+        }
+
+        // Validar campo de correo del estudiante
+        if (jTxtCorreoEs.getText().isEmpty()) {
+            valid = false;
+            JOptionPane.showMessageDialog(this, "El correo del estudiante es obligatorio", "Validar campo", JOptionPane.WARNING_MESSAGE);
+        }
+
+        return valid;
+    }
+
+    private void asignarDatos(Inscripcion inscripcion) {
+        
+            SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
+            String fechaTexto;
+
+            fechaTexto = formatoFecha.format(inscripcion.getFechaInscripcion());
+
+            jTxtFechaIns.setText(fechaTexto);
+
+            Curso curso = mapCursos.get(inscripcion.getCursoID());
+            jComboCursos.setSelectedItem(curso);
+
+            jTxtNombreEs.setText(inscripcion.getEstudianteNombre());
+            jTxtCorreoEs.setText(inscripcion.getEstudianteCorreo());
+       
+    }
+
+    private void crearReg() {
+        try {
+            Inscripcion inscripcion = obtenerDatos();
+            int result = InscripcionDAL.crear(inscripcion);
+            if (result > 0) {
+                JOptionPane.showMessageDialog(this,
+                        "La inscripcion fue registrado existosamente", "CREAR INSCRIPCION",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Sucedio un error al crear la inscripcion", "ERROR INSCRIPCION",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    ex.getMessage(), "ERROR INSCRIPCION",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+
+    }
+
     private void jBtnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnGuardarActionPerformed
         // TODO add your handling code here:
-         if (null != opcionCRUD) // TODO add your handling code here:
-            switch (opcionCRUD) {
-                case CREAR:
-                    JOptionPane.showMessageDialog(this,"Guardar resgistros","Crear",
-                    JOptionPane.INFORMATION_MESSAGE);
-                    this.setVisible(false);
-                    break;
-                case MODIFICAR:
-                    JOptionPane.showMessageDialog(this,"Modificar resgistros","Modificar",
-                    JOptionPane.INFORMATION_MESSAGE);
-                    this.setVisible(false);
-                    break;
-                case ELIMINAR:
-                    JOptionPane.showMessageDialog(this,"Eliminar resgistros","Eliminar",
-                    JOptionPane.INFORMATION_MESSAGE);
-                    this.setVisible(false);
-                    break;
-                default:
-                    break;
-            }
+       if (validarDatos()) {
+            if (null != opcionCRUD) 
+                switch (opcionCRUD) {
+                    case CREAR:
+                        crearReg();
+                        this.setVisible(false);
+                        break;
+                    case MODIFICAR:
+                        JOptionPane.showMessageDialog(this, "Modificar resgistros", "Modificar",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        this.setVisible(false);
+                        break;
+                    case ELIMINAR:
+                        JOptionPane.showMessageDialog(this, "Eliminar resgistros", "Eliminar",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        this.setVisible(false);
+                        break;
+                    default:
+                        break;
+                }
+       }
     }//GEN-LAST:event_jBtnGuardarActionPerformed
 
     /**
      * @param args the command line arguments
      */
-   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jBtnCancelar;
     private javax.swing.JButton jBtnGuardar;
-    private javax.swing.JComboBox<String> jComboCursos;
+    private javax.swing.JComboBox<Curso> jComboCursos;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

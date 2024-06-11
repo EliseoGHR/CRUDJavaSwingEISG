@@ -4,6 +4,8 @@
  */
 package com.mycompany.crudjavaswingeisg;
 
+import entidades.Inscripcion;
+import accesoadatos.InscripcionDAL;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import utilerias.OpcionesCRUD;
@@ -48,6 +50,11 @@ public class FrmInscripcionesLec extends javax.swing.JFrame {
         jLabel1.setText("Nombre del estudiante:");
 
         jBtnBuscar.setText("Buscar");
+        jBtnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBtnBuscarActionPerformed(evt);
+            }
+        });
 
         jBtnIrACrear.setText("Ir a crear");
         jBtnIrACrear.addActionListener(new java.awt.event.ActionListener() {
@@ -110,7 +117,7 @@ public class FrmInscripcionesLec extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTxtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jTxtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jBtnBuscar)
                                 .addGap(18, 18, 18)
@@ -170,6 +177,27 @@ public class FrmInscripcionesLec extends javax.swing.JFrame {
         frmInscripcionesEsc.setTitle("Eliminar inscripciones");
         frmInscripcionesEsc.setVisible(true);
     }//GEN-LAST:event_jBtnEliminarActionPerformed
+
+    private void jBtnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnBuscarActionPerformed
+        // TODO add your handling code here:
+
+         Inscripcion inscripcion = new Inscripcion();
+        inscripcion.setEstudianteNombre(jTxtNombre.getText());
+        ArrayList<Inscripcion> Inscripciones = InscripcionDAL.buscar(inscripcion);
+        String[] columnas = {"ID Incripcion", "Fecha Inscripcion", "CursoID", "Curso", "Nombre Estudiante", "CorreoEstudiante"};
+        Object[][] datos = new Object[Inscripciones.size()][6];
+        for (int i = 0; i < Inscripciones.size(); i++) {
+            Inscripcion item = Inscripciones.get(i);
+            datos[i][0] = item.getInscripcionID();
+            datos[i][1] = item.getFechaInscripcion();
+            datos[i][2] = item.getCursoID();
+            datos[i][3] = item.getCurso().getNombre();
+            datos[i][4] = item.getEstudianteNombre();
+             datos[i][5] = item.getEstudianteCorreo();
+        }
+        DefaultTableModel modelTable = new DefaultTableModel(datos, columnas);
+        jTableInscripciones.setModel(modelTable);
+    }//GEN-LAST:event_jBtnBuscarActionPerformed
 
     /**
      * @param args the command line arguments

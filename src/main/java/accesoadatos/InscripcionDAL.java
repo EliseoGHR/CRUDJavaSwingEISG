@@ -24,7 +24,9 @@ public class InscripcionDAL {
 
             String sql = "INSERT INTO Inscripciones (FechaInscripcion, CursoID, EstudianteNombre, EstudianteCorreo) VALUES (?, ?, ?, ?)";
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
-                statement.setDate(1, (Date) inscripcion.getFechaInscripcion());
+                java.util.Date fechaInscripcionUtil = inscripcion.getFechaInscripcion();
+                java.sql.Date fechaInscripcionSQL = new java.sql.Date(fechaInscripcionUtil.getTime());
+                statement.setDate(1, fechaInscripcionSQL);
                 statement.setInt(2, inscripcion.getCursoID());
                 statement.setString(3, inscripcion.getEstudianteNombre());
                 statement.setString(4, inscripcion.getEstudianteCorreo());
@@ -43,7 +45,9 @@ public class InscripcionDAL {
 
             String sql = "UPDATE Inscripciones SET FechaInscripcion=?, CursoID=?, EstudianteNombre=?, EstudianteCorreo=? WHERE InscripcionID=?";
             try (PreparedStatement statement = conn.prepareStatement(sql)) {
-                statement.setDate(1, (Date) inscripcion.getFechaInscripcion());
+                java.util.Date fechaInscripcionUtil = inscripcion.getFechaInscripcion();
+                java.sql.Date fechaInscripcionSQL = new java.sql.Date(fechaInscripcionUtil.getTime());
+                statement.setDate(1, fechaInscripcionSQL);
                 statement.setInt(2, inscripcion.getCursoID());
                 statement.setString(3, inscripcion.getEstudianteNombre());
                 statement.setString(4, inscripcion.getEstudianteCorreo());
@@ -78,25 +82,33 @@ public class InscripcionDAL {
     }
     
      public static ArrayList<Inscripcion> buscar(Inscripcion inscripcionSearch) {
-        ArrayList<Inscripcion> inscripciones = new ArrayList<>();
-        try (Connection conn = ComunDB.obtenerConexion()) {
-            String sql = "SELECT InscripcionID, FechaInscripcion, CursoID, EstudianteNombre, EstudianteCorreo FROM Inscripciones WHERE EstudianteNombre LIKE ?";
-            try (PreparedStatement statement = conn.prepareStatement(sql)) {
-                 statement.setString(1,"%" + inscripcionSearch .getEstudianteNombre() + "%");
-                try (ResultSet resultSet = statement.executeQuery()) {
-                    while (resultSet.next()) {
-                        Inscripcion incripcion = new Inscripcion();
-                        int cursoID = resultSet.getInt("CursoID");
-                        
-                        inscripciones.add(incripcion);
-                    }
+         ArrayList<Inscripcion> inscripciones = new ArrayList<>();
+    try (Connection conn = ComunDB.obtenerConexion()) {
+        String sql = "SELECT i.InscripcionID, i.FechaInscripcion, i.CursoID, c.Nombre AS NombreCurso, i.EstudianteNombre, i.EstudianteCorreo FROM Inscripciones i";
+        sql += " INNER JOIN Cursos c ON c.CursoID = i.CursoID";
+        sql += " WHERE i.EstudianteNombre LIKE ?";
+        try (PreparedStatement statement = conn.prepareStatement(sql)) {
+            statement.setString(1, "%" + inscripcionSearch.getEstudianteNombre() + "%");
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Inscripcion inscripcion = new Inscripcion();
+                    inscripcion.setInscripcionID(resultSet.getInt("InscripcionID"));
+                    inscripcion.setFechaInscripcion(resultSet.getDate("FechaInscripcion"));
+                    inscripcion.setCursoID(resultSet.getInt("CursoID"));
+                    Curso curso = new Curso();
+                    curso.setNombre(resultSet.getString("NombreCurso"));
+                    inscripcion.setCurso(curso);
+                    inscripcion.setEstudianteNombre(resultSet.getString("EstudianteNombre"));
+                    inscripcion.setEstudianteCorreo(resultSet.getString("EstudianteCorreo"));
+                    inscripciones.add(inscripcion);
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException("Error al obtener los cursos", e);
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error al obtener la conexión a la base de datos", e);
+            throw new RuntimeException("Error al buscar inscripciones", e);
         }
-        return inscripciones;
+    } catch (SQLException e) {
+        throw new RuntimeException("Error al obtener la conexión a la base de datos", e);
+    }
+    return inscripciones;
      }
 }
