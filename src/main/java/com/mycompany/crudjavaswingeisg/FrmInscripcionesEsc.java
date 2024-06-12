@@ -26,18 +26,25 @@ import javax.swing.DefaultComboBoxModel;
 public class FrmInscripcionesEsc extends javax.swing.JFrame {
 
     private OpcionesCRUD opcionCRUD;
-    private HashMap<Integer, Curso> mapCursos = new HashMap<Integer, Curso>();
-    private Inscripcion productActual = new Inscripcion();
+    private Inscripcion inscripcionActual = new Inscripcion();
+    private HashMap<Integer, Curso> mapCursos = new HashMap<Integer,Curso>();
 
     /**
      * Creates new form FrmInscripcionesEsc
      */
-    public FrmInscripcionesEsc(OpcionesCRUD opcion) {
+    public FrmInscripcionesEsc(OpcionesCRUD opcion, Inscripcion inscripcion) {
         this.opcionCRUD = opcion;
         initComponents();
         ArrayList<Curso> cursos = CursoDAL.obtenerTodos();
         DefaultComboBoxModel<Curso> modelCombox = new DefaultComboBoxModel(cursos.toArray());
+        for (Curso cur : cursos) {
+            mapCursos.put(cur.getCursoID(), cur);
+        }
         jComboCursos.setModel(modelCombox);
+        if (opcion != OpcionesCRUD.CREAR) {
+            asignarDatos(inscripcion);
+            inscripcionActual = inscripcion;
+        }
 
     }
 
@@ -174,7 +181,7 @@ public class FrmInscripcionesEsc extends javax.swing.JFrame {
             return null;
         }
 
-        //inscripcion.setInscripcionID(inscripcionActual.getInscripcionID());
+        inscripcion.setInscripcionID(inscripcionActual.getInscripcionID());
         return inscripcion;
     }
 
@@ -209,20 +216,20 @@ public class FrmInscripcionesEsc extends javax.swing.JFrame {
     }
 
     private void asignarDatos(Inscripcion inscripcion) {
-        
-            SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
-            String fechaTexto;
 
-            fechaTexto = formatoFecha.format(inscripcion.getFechaInscripcion());
+        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
+        String fechaTexto;
 
-            jTxtFechaIns.setText(fechaTexto);
+        fechaTexto = formatoFecha.format(inscripcion.getFechaInscripcion());
 
-            Curso curso = mapCursos.get(inscripcion.getCursoID());
-            jComboCursos.setSelectedItem(curso);
+        jTxtFechaIns.setText(fechaTexto);
 
-            jTxtNombreEs.setText(inscripcion.getEstudianteNombre());
-            jTxtCorreoEs.setText(inscripcion.getEstudianteCorreo());
-       
+        Curso curso = mapCursos.get(inscripcion.getCursoID());
+        jComboCursos.setSelectedItem(curso);
+
+        jTxtNombreEs.setText(inscripcion.getEstudianteNombre());
+        jTxtCorreoEs.setText(inscripcion.getEstudianteCorreo());
+
     }
 
     private void crearReg() {
@@ -246,10 +253,52 @@ public class FrmInscripcionesEsc extends javax.swing.JFrame {
 
     }
 
+     private void modificarReg() {
+        try {
+            Inscripcion inscripcion = obtenerDatos();
+            int result = InscripcionDAL.modificar(inscripcion);
+            if (result > 0) {
+                JOptionPane.showMessageDialog(this,
+                        "El producto fue modificado existosamente", "MODIFICAR PRODUCTO",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Sucedio un error al modificar el producto", "ERROR PRODUCTO",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    ex.getMessage(), "ERROR PRODUCTO",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+
+    }
+    
+    private void eliminarReg() {
+        try {
+            Inscripcion inscripcion = obtenerDatos();
+            int result = InscripcionDAL.eliminar(inscripcion);
+            if (result > 0) {
+                JOptionPane.showMessageDialog(this,
+                        "La inscripcion fue eliminar existosamente", "ELIMINAR INSCRIPCION",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Sucedio un error al eliminar la inscripcion", "ERROR INSCRIPCION",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    ex.getMessage(), "ERROR INSCRIPCION",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+
+    }
+
     private void jBtnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnGuardarActionPerformed
         // TODO add your handling code here:
-       if (validarDatos()) {
-            if (null != opcionCRUD) 
+        if (validarDatos()) {
+            if (null != opcionCRUD) {
                 switch (opcionCRUD) {
                     case CREAR:
                         crearReg();
@@ -261,14 +310,14 @@ public class FrmInscripcionesEsc extends javax.swing.JFrame {
                         this.setVisible(false);
                         break;
                     case ELIMINAR:
-                        JOptionPane.showMessageDialog(this, "Eliminar resgistros", "Eliminar",
-                                JOptionPane.INFORMATION_MESSAGE);
+                        eliminarReg();
                         this.setVisible(false);
                         break;
                     default:
                         break;
                 }
-       }
+            }
+        }
     }//GEN-LAST:event_jBtnGuardarActionPerformed
 
     /**

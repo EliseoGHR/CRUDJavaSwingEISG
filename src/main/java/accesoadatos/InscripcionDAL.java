@@ -52,8 +52,7 @@ public class InscripcionDAL {
                 statement.setString(3, inscripcion.getEstudianteNombre());
                 statement.setString(4, inscripcion.getEstudianteCorreo());
                 statement.setInt(5, inscripcion.getInscripcionID());
-
-                int rowsAffected = statement.executeUpdate();
+                 int rowsAffected = statement.executeUpdate();
                 return rowsAffected;
             } catch (SQLException e) {
                 throw new RuntimeException("Error al modificar la inscripcion", e);
@@ -62,6 +61,8 @@ public class InscripcionDAL {
             throw new RuntimeException("Error al obtener la conexión a la base de datos", e);
         }
     }
+    
+    
     
     public static int eliminar(Inscripcion inscripcion) {
         try (Connection conn = ComunDB.obtenerConexion()) {

@@ -6,7 +6,11 @@ package com.mycompany.crudjavaswingeisg;
 
 import entidades.Inscripcion;
 import accesoadatos.InscripcionDAL;
+import entidades.Curso;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.JOptionPane;
 import utilerias.OpcionesCRUD;
 import javax.swing.table.DefaultTableModel;
@@ -113,31 +117,29 @@ public class FrmInscripcionesLec extends javax.swing.JFrame {
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 602, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 729, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTxtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jBtnBuscar)
                                 .addGap(18, 18, 18)
-                                .addComponent(jBtnIrACrear)))
+                                .addComponent(jTxtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 315, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jBtnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jBtnIrACrear, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(23, 23, 23))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel1)
-                        .addComponent(jTxtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jBtnBuscar)
-                        .addComponent(jBtnIrACrear)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jTxtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jBtnBuscar)
+                    .addComponent(jBtnIrACrear))
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jBtnEditar)
                     .addComponent(jBtnEliminar)
@@ -152,7 +154,7 @@ public class FrmInscripcionesLec extends javax.swing.JFrame {
     private void jBtnIrACrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnIrACrearActionPerformed
         // TODO add your handling code here:
         opcionCRUD = OpcionesCRUD.CREAR;
-        FrmInscripcionesEsc frmInscripcionesEsc = new FrmInscripcionesEsc(opcionCRUD);
+        FrmInscripcionesEsc frmInscripcionesEsc = new FrmInscripcionesEsc(opcionCRUD, new Inscripcion());
         frmInscripcionesEsc.setTitle("Crear inscripciones");
         frmInscripcionesEsc.setVisible(true);
     }//GEN-LAST:event_jBtnIrACrearActionPerformed
@@ -162,26 +164,67 @@ public class FrmInscripcionesLec extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_jBtnCancelarActionPerformed
 
+    private Date fechaInscripcion(String fechaString) {
+        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd-MM-yyyy");
+        Date fecha = null;
+        try {
+            fecha = formatoFecha.parse(fechaString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return fecha;
+    }
+
+    private Inscripcion obtenerDatos() {
+        Inscripcion inscripcion = new Inscripcion();
+        int row = jTableInscripciones.getSelectedRow();
+        inscripcion.setInscripcionID((int) jTableInscripciones.getValueAt(row, 0));
+        inscripcion.setFechaInscripcion(fechaInscripcion((String) jTableInscripciones.getValueAt(row, 1)));
+        Curso curso = new Curso(); 
+        curso.setCursoID((int) jTableInscripciones.getValueAt(row, 2));
+        curso.setNombre(jTableInscripciones.getValueAt(row, 3).toString());
+        inscripcion.setEstudianteNombre(jTableInscripciones.getValueAt(row, 4).toString());
+        inscripcion.setEstudianteCorreo(jTableInscripciones.getValueAt(row, 5).toString());
+
+        
+        inscripcion.setCurso(curso);
+        return inscripcion;
+    }
+
     private void jBtnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnEditarActionPerformed
         // TODO add your handling code here:
-        opcionCRUD = OpcionesCRUD.MODIFICAR;
-        FrmInscripcionesEsc frmInscripcionesEsc = new FrmInscripcionesEsc(opcionCRUD);
-        frmInscripcionesEsc.setTitle("Modificar inscripciones");
-        frmInscripcionesEsc.setVisible(true);
+        int row = jTableInscripciones.getSelectedRow();
+        if (row != -1) {
+            opcionCRUD = OpcionesCRUD.MODIFICAR;
+            FrmInscripcionesEsc frmInscripcionesEsc = new FrmInscripcionesEsc(opcionCRUD, obtenerDatos());
+            frmInscripcionesEsc.setTitle("Modificar Inscripcion");
+            frmInscripcionesEsc.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "Seleccionar una fila", "Inscripcion",
+                    JOptionPane.WARNING_MESSAGE);
+        }
     }//GEN-LAST:event_jBtnEditarActionPerformed
 
     private void jBtnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnEliminarActionPerformed
         // TODO add your handling code here:
+        int row = jTableInscripciones.getSelectedRow();
+        if (row != -1) {
         opcionCRUD = OpcionesCRUD.ELIMINAR;
-        FrmInscripcionesEsc frmInscripcionesEsc = new FrmInscripcionesEsc(opcionCRUD);
+        FrmInscripcionesEsc frmInscripcionesEsc = new FrmInscripcionesEsc(opcionCRUD,obtenerDatos());
         frmInscripcionesEsc.setTitle("Eliminar inscripciones");
         frmInscripcionesEsc.setVisible(true);
+         } else {
+            JOptionPane.showMessageDialog(this,
+                    "Seleccionar una fila", "Inscripcion",
+                    JOptionPane.WARNING_MESSAGE);
+        }
     }//GEN-LAST:event_jBtnEliminarActionPerformed
 
     private void jBtnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnBuscarActionPerformed
         // TODO add your handling code here:
 
-         Inscripcion inscripcion = new Inscripcion();
+        Inscripcion inscripcion = new Inscripcion();
         inscripcion.setEstudianteNombre(jTxtNombre.getText());
         ArrayList<Inscripcion> Inscripciones = InscripcionDAL.buscar(inscripcion);
         String[] columnas = {"ID Incripcion", "Fecha Inscripcion", "CursoID", "Curso", "Nombre Estudiante", "CorreoEstudiante"};
@@ -193,7 +236,7 @@ public class FrmInscripcionesLec extends javax.swing.JFrame {
             datos[i][2] = item.getCursoID();
             datos[i][3] = item.getCurso().getNombre();
             datos[i][4] = item.getEstudianteNombre();
-             datos[i][5] = item.getEstudianteCorreo();
+            datos[i][5] = item.getEstudianteCorreo();
         }
         DefaultTableModel modelTable = new DefaultTableModel(datos, columnas);
         jTableInscripciones.setModel(modelTable);
