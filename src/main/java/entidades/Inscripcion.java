@@ -13,7 +13,7 @@ import java.util.Date;
 public class Inscripcion {
 
     private int inscripcionID;
-    private Date fechaInscripcion;
+    private String fechaInscripcion;
     private int cursoID;
     private String estudianteNombre;
     private String estudianteCorreo;
@@ -22,7 +22,7 @@ public class Inscripcion {
     public Inscripcion() {
     }
 
-    public Inscripcion(int inscripcionID, Date fechaInscripcion, int cursoID, String estudianteNombre, String estudianteCorreo, Curso curso) {
+    public Inscripcion(int inscripcionID, String fechaInscripcion, int cursoID, String estudianteNombre, String estudianteCorreo, Curso curso) {
         this.inscripcionID = inscripcionID;
         this.fechaInscripcion = fechaInscripcion;
         this.cursoID = cursoID;
@@ -39,11 +39,11 @@ public class Inscripcion {
         this.inscripcionID = inscripcionID;
     }
 
-    public Date getFechaInscripcion() {
+    public String getFechaInscripcion() {
         return fechaInscripcion;
     }
 
-    public void setFechaInscripcion(Date fechaInscripcion) {
+    public void setFechaInscripcion(String fechaInscripcion) {
         this.fechaInscripcion = fechaInscripcion;
     }
 

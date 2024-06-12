@@ -26,8 +26,9 @@ import javax.swing.DefaultComboBoxModel;
 public class FrmInscripcionesEsc extends javax.swing.JFrame {
 
     private OpcionesCRUD opcionCRUD;
+
     private Inscripcion inscripcionActual = new Inscripcion();
-    private HashMap<Integer, Curso> mapCursos = new HashMap<Integer,Curso>();
+    private HashMap<Integer, Curso> mapCursos = new HashMap<Integer, Curso>();
 
     /**
      * Creates new form FrmInscripcionesEsc
@@ -159,17 +160,16 @@ public class FrmInscripcionesEsc extends javax.swing.JFrame {
 
     private Inscripcion obtenerDatos() {
         Inscripcion inscripcion = new Inscripcion();
-        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
-        String fechaTexto = jTxtFechaIns.getText();
-        Date fechaInscripcion;
+        // Validate date format
+        String fechaInscripcion = jTxtFechaIns.getText();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         try {
-            fechaInscripcion = formatoFecha.parse(fechaTexto);
+            Date date = dateFormat.parse(fechaInscripcion);
+            inscripcion.setFechaInscripcion(fechaInscripcion);
         } catch (ParseException e) {
-
-            JOptionPane.showMessageDialog(null, "El formato de fecha ingresado es incorrecto. Debe ser dd/mm/aaaa.", "Error de formato", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "La fecha de inscripción debe tener el formato 'dd-MM-yyyy'.", "Error de formato", JOptionPane.ERROR_MESSAGE);
             return null;
         }
-        inscripcion.setFechaInscripcion(fechaInscripcion);
         Curso curso = (Curso) jComboCursos.getSelectedItem();
         inscripcion.setCursoID(curso.getCursoID());
         inscripcion.setEstudianteNombre(jTxtNombreEs.getText());
@@ -217,18 +217,11 @@ public class FrmInscripcionesEsc extends javax.swing.JFrame {
 
     private void asignarDatos(Inscripcion inscripcion) {
 
-        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
-        String fechaTexto;
-
-        fechaTexto = formatoFecha.format(inscripcion.getFechaInscripcion());
-
-        jTxtFechaIns.setText(fechaTexto);
-
-        Curso curso = mapCursos.get(inscripcion.getCursoID());
-        jComboCursos.setSelectedItem(curso);
-
+        jTxtFechaIns.setText(inscripcion.getFechaInscripcion());
         jTxtNombreEs.setText(inscripcion.getEstudianteNombre());
         jTxtCorreoEs.setText(inscripcion.getEstudianteCorreo());
+        Curso curso = mapCursos.get(inscripcion.getCursoID());
+        jComboCursos.setSelectedItem(curso);
 
     }
 
@@ -253,7 +246,7 @@ public class FrmInscripcionesEsc extends javax.swing.JFrame {
 
     }
 
-     private void modificarReg() {
+    private void modificarReg() {
         try {
             Inscripcion inscripcion = obtenerDatos();
             int result = InscripcionDAL.modificar(inscripcion);
@@ -273,7 +266,7 @@ public class FrmInscripcionesEsc extends javax.swing.JFrame {
         }
 
     }
-    
+
     private void eliminarReg() {
         try {
             Inscripcion inscripcion = obtenerDatos();
@@ -305,8 +298,7 @@ public class FrmInscripcionesEsc extends javax.swing.JFrame {
                         this.setVisible(false);
                         break;
                     case MODIFICAR:
-                        JOptionPane.showMessageDialog(this, "Modificar resgistros", "Modificar",
-                                JOptionPane.INFORMATION_MESSAGE);
+                        modificarReg();
                         this.setVisible(false);
                         break;
                     case ELIMINAR:

@@ -37,7 +37,7 @@ public class FrmInicio extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jMenu1.setText("Cursos e Inscripciones");
+        jMenu1.setText("Inscripciones estudiantes");
 
         jMeInscripciones.setText("Inscripciones");
         jMeInscripciones.addActionListener(new java.awt.event.ActionListener() {

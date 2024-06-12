@@ -164,40 +164,31 @@ public class FrmInscripcionesLec extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_jBtnCancelarActionPerformed
 
-    private Date fechaInscripcion(String fechaString) {
-        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd-MM-yyyy");
-        Date fecha = null;
-        try {
-            fecha = formatoFecha.parse(fechaString);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return fecha;
-    }
-
     private Inscripcion obtenerDatos() {
         Inscripcion inscripcion = new Inscripcion();
         int row = jTableInscripciones.getSelectedRow();
         inscripcion.setInscripcionID((int) jTableInscripciones.getValueAt(row, 0));
-        inscripcion.setFechaInscripcion(fechaInscripcion((String) jTableInscripciones.getValueAt(row, 1)));
-        Curso curso = new Curso(); 
-        curso.setCursoID((int) jTableInscripciones.getValueAt(row, 2));
-        curso.setNombre(jTableInscripciones.getValueAt(row, 3).toString());
-        inscripcion.setEstudianteNombre(jTableInscripciones.getValueAt(row, 4).toString());
-        inscripcion.setEstudianteCorreo(jTableInscripciones.getValueAt(row, 5).toString());
+        inscripcion.setFechaInscripcion(jTableInscripciones.getValueAt(row, 1).toString());
+        inscripcion.setEstudianteNombre(jTableInscripciones.getValueAt(row, 2).toString());
+        inscripcion.setEstudianteCorreo(jTableInscripciones.getValueAt(row, 3).toString());
+        inscripcion.setCursoID((int) jTableInscripciones.getValueAt(row, 4));
 
-        
+        Curso curso = new Curso();
+        curso.setNombre(jTableInscripciones.getValueAt(row, 5).toString());
+        curso.setCursoID((int) jTableInscripciones.getValueAt(row, 4));
+
         inscripcion.setCurso(curso);
         return inscripcion;
     }
 
     private void jBtnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnEditarActionPerformed
         // TODO add your handling code here:
+
         int row = jTableInscripciones.getSelectedRow();
         if (row != -1) {
             opcionCRUD = OpcionesCRUD.MODIFICAR;
             FrmInscripcionesEsc frmInscripcionesEsc = new FrmInscripcionesEsc(opcionCRUD, obtenerDatos());
-            frmInscripcionesEsc.setTitle("Modificar Inscripcion");
+            frmInscripcionesEsc.setTitle("EDITAR REGISTRO");
             frmInscripcionesEsc.setVisible(true);
         } else {
             JOptionPane.showMessageDialog(this,
@@ -210,11 +201,11 @@ public class FrmInscripcionesLec extends javax.swing.JFrame {
         // TODO add your handling code here:
         int row = jTableInscripciones.getSelectedRow();
         if (row != -1) {
-        opcionCRUD = OpcionesCRUD.ELIMINAR;
-        FrmInscripcionesEsc frmInscripcionesEsc = new FrmInscripcionesEsc(opcionCRUD,obtenerDatos());
-        frmInscripcionesEsc.setTitle("Eliminar inscripciones");
-        frmInscripcionesEsc.setVisible(true);
-         } else {
+            opcionCRUD = OpcionesCRUD.ELIMINAR;
+            FrmInscripcionesEsc frmInscripcionesEsc = new FrmInscripcionesEsc(opcionCRUD, obtenerDatos());
+            frmInscripcionesEsc.setTitle("Eliminar inscripciones");
+            frmInscripcionesEsc.setVisible(true);
+        } else {
             JOptionPane.showMessageDialog(this,
                     "Seleccionar una fila", "Inscripcion",
                     JOptionPane.WARNING_MESSAGE);
@@ -227,16 +218,16 @@ public class FrmInscripcionesLec extends javax.swing.JFrame {
         Inscripcion inscripcion = new Inscripcion();
         inscripcion.setEstudianteNombre(jTxtNombre.getText());
         ArrayList<Inscripcion> Inscripciones = InscripcionDAL.buscar(inscripcion);
-        String[] columnas = {"ID Incripcion", "Fecha Inscripcion", "CursoID", "Curso", "Nombre Estudiante", "CorreoEstudiante"};
+        String[] columnas = {"ID Incripcion", "Fecha Inscripcion", "Nombre Estudiante", "Correo Estudiante", "CursoID", "Curso"};
         Object[][] datos = new Object[Inscripciones.size()][6];
         for (int i = 0; i < Inscripciones.size(); i++) {
             Inscripcion item = Inscripciones.get(i);
             datos[i][0] = item.getInscripcionID();
             datos[i][1] = item.getFechaInscripcion();
-            datos[i][2] = item.getCursoID();
-            datos[i][3] = item.getCurso().getNombre();
-            datos[i][4] = item.getEstudianteNombre();
-            datos[i][5] = item.getEstudianteCorreo();
+            datos[i][2] = item.getEstudianteNombre();
+            datos[i][3] = item.getEstudianteCorreo();
+            datos[i][4] = item.getCursoID();
+            datos[i][5] = item.getCurso().getNombre();
         }
         DefaultTableModel modelTable = new DefaultTableModel(datos, columnas);
         jTableInscripciones.setModel(modelTable);
