@@ -12,7 +12,7 @@ Precio DECIMAL(10,2) NOT NULL
 
 CREATE TABLE Inscripciones (
 InscripcionID INT PRIMARY KEY IDENTITY(1,1),
-FechaInscripcion DATE NOT NULL,
+FechaInscripcion VARCHAR(100) NOT NULL,
 CursoID INT NOT NULL,
 EstudianteNombre VARCHAR(100) NOT NULL,
 EstudianteCorreo VARCHAR(100) NOT NULL,

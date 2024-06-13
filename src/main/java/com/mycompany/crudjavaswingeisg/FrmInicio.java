@@ -33,6 +33,7 @@ public class FrmInicio extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMeInscripciones = new javax.swing.JMenuItem();
+        jMeCursos = new javax.swing.JMenuItem();
         jMeCerrar = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -46,6 +47,14 @@ public class FrmInicio extends javax.swing.JFrame {
             }
         });
         jMenu1.add(jMeInscripciones);
+
+        jMeCursos.setText("Cursos");
+        jMeCursos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMeCursosActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMeCursos);
 
         jMenuBar1.add(jMenu1);
 
@@ -77,6 +86,7 @@ public class FrmInicio extends javax.swing.JFrame {
         // TODO add your handling code here:
         FrmInscripcionesLec frmInscripcionesLec = new FrmInscripcionesLec();
         frmInscripcionesLec.setVisible(true);
+        this.setVisible(false);
     }//GEN-LAST:event_jMeInscripcionesActionPerformed
 
     private void jMeCerrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMeCerrarMouseClicked
@@ -84,6 +94,13 @@ public class FrmInicio extends javax.swing.JFrame {
         this.dispose();
         System.exit(0);
     }//GEN-LAST:event_jMeCerrarMouseClicked
+
+    private void jMeCursosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMeCursosActionPerformed
+        // TODO add your handling code here:
+        FrmCursosLec  frmCursosLec= new FrmCursosLec();
+        frmCursosLec.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_jMeCursosActionPerformed
 
     /**
      * @param args the command line arguments
@@ -122,6 +139,7 @@ public class FrmInicio extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu jMeCerrar;
+    private javax.swing.JMenuItem jMeCursos;
     private javax.swing.JMenuItem jMeInscripciones;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
